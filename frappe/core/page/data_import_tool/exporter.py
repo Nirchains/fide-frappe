@@ -3,12 +3,12 @@
 
 from __future__ import unicode_literals
 
-import frappe, json, os
+import frappe, json
 from frappe import _
 import frappe.permissions
 import re
 from frappe.utils.csvutils import UnicodeWriter
-from frappe.utils import cstr, cint, flt, formatdate, format_datetime
+from frappe.utils import cstr, formatdate, format_datetime
 from  frappe.core.page.data_import_tool.data_import_tool import get_data_keys
 
 reflags = {
@@ -22,8 +22,10 @@ reflags = {
 }
 
 @frappe.whitelist()
-def get_template(doctype=None, parent_doctype=None, all_doctypes="No", with_data="No"):
+def get_template(doctype=None, parent_doctype=None, all_doctypes="No", with_data="No", select_columns=None):
 	all_doctypes = all_doctypes=="Yes"
+	if select_columns:
+		select_columns = json.loads(select_columns);
 	docs_to_export = {}
 	if doctype:
 		if isinstance(doctype, basestring):
@@ -72,8 +74,12 @@ def get_template(doctype=None, parent_doctype=None, all_doctypes="No", with_data
 	def build_field_columns(dt):
 		meta = frappe.get_meta(dt)
 
-		tablecolumns = filter(None,
-			[(meta.get_field(f[0]) or None) for f in frappe.db.sql('desc `tab%s`' % dt)])
+		# build list of valid docfields
+		tablecolumns = []
+		for f in frappe.db.sql('desc `tab%s`' % dt):
+			field = meta.get_field(f[0])
+			if field and ((select_columns and f[0] in select_columns[dt]) or not select_columns):
+				tablecolumns.append(field)
 
 		tablecolumns.sort(lambda a, b: int(a.idx - b.idx))
 
@@ -84,6 +90,7 @@ def get_template(doctype=None, parent_doctype=None, all_doctypes="No", with_data
 
 			append_field_column(frappe._dict({
 				"fieldname": "name",
+				"parent": dt,
 				"label": "ID",
 				"fieldtype": "Data",
 				"reqd": 1,
@@ -98,23 +105,39 @@ def get_template(doctype=None, parent_doctype=None, all_doctypes="No", with_data
 		for docfield in tablecolumns:
 			append_field_column(docfield, False)
 
+		# if there is one column, add a blank column (?)
+		if len(columns)-column_start_end[dt].start == 1:
+			append_empty_field_column()
+
 		# append DocType name
 		tablerow[column_start_end[dt].start + 1] = dt
+
 		if dt!=doctype:
 			tablerow[column_start_end[dt].start + 2] = doctype_parentfield[dt]
 
 		column_start_end[dt].end = len(columns) + 1
 
-	def append_field_column(docfield, mandatory):
-		if docfield and ((mandatory and docfield.reqd) or not (mandatory or docfield.reqd)) \
-			and (docfield.fieldname not in ('parenttype', 'trash_reason')) and not docfield.hidden:
-			tablerow.append("")
-			fieldrow.append(docfield.fieldname)
-			labelrow.append(_(docfield.label))
-			mandatoryrow.append(docfield.reqd and 'Yes' or 'No')
-			typerow.append(docfield.fieldtype)
-			inforow.append(getinforow(docfield))
-			columns.append(docfield.fieldname)
+	def append_field_column(docfield, for_mandatory):
+		if not docfield:
+			return
+		if for_mandatory and not docfield.reqd:
+			return
+		if not for_mandatory and docfield.reqd:
+			return
+		if docfield.fieldname in ('parenttype', 'trash_reason'):
+			return
+		if docfield.hidden:
+			return
+		if select_columns and docfield.fieldname not in select_columns.get(docfield.parent, []):
+			return
+
+		tablerow.append("")
+		fieldrow.append(docfield.fieldname)
+		labelrow.append(_(docfield.label))
+		mandatoryrow.append(docfield.reqd and 'Yes' or 'No')
+		typerow.append(docfield.fieldtype)
+		inforow.append(getinforow(docfield))
+		columns.append(docfield.fieldname)
 
 	def append_empty_field_column():
 		tablerow.append("~")
@@ -162,17 +185,18 @@ def get_template(doctype=None, parent_doctype=None, all_doctypes="No", with_data
 			if len(row_group) < rowidx + 1:
 				row_group.append([""] * (len(columns) + 1))
 			row = row_group[rowidx]
-			for i, c in enumerate(columns[column_start_end[dt].start:column_start_end[dt].end]):
-				df = meta.get_field(c)
-				fieldtype = df.fieldtype if df else "Data"
-				value = d.get(c, "")
-				if value:
-					if fieldtype == "Date":
-						value = formatdate(value)
-					elif fieldtype == "Datetime":
-						value = format_datetime(value)
+			if column_start_end.get(dt):
+				for i, c in enumerate(columns[column_start_end[dt].start:column_start_end[dt].end]):
+					df = meta.get_field(c)
+					fieldtype = df.fieldtype if df else "Data"
+					value = d.get(c, "")
+					if value:
+						if fieldtype == "Date":
+							value = formatdate(value)
+						elif fieldtype == "Datetime":
+							value = format_datetime(value)
 
-				row[column_start_end[dt].start + i + 1] = value
+					row[column_start_end[dt].start + i + 1] = value
 
 		if with_data=='Yes':
 			frappe.permissions.can_export(parent_doctype, raise_exception=True)
@@ -238,11 +262,15 @@ def get_template(doctype=None, parent_doctype=None, all_doctypes="No", with_data
 	inforow = [_('Info:'), '']
 	columns = [key]
 
+
+
 	build_field_columns(doctype)
 	if all_doctypes:
 		for d in child_doctypes:
 			append_empty_field_column()
-			build_field_columns(d)
+			if (select_columns and select_columns.get(d, None)) or not select_columns:
+				# if atleast one column is selected for this doctype
+				build_field_columns(d)
 
 	add_field_headings()
 	add_data()

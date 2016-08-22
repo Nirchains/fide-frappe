@@ -36,7 +36,7 @@ class User(Document):
 	def onload(self):
 		self.set_onload('all_modules',
 			[m.module_name for m in frappe.db.get_all('Desktop Icon',
-				fields=['module_name'], filters={'standard': 1})])
+				fields=['module_name'], filters={'standard': 1}, order_by="module_name")])
 
 	def validate(self):
 		self.check_demo()
@@ -58,10 +58,17 @@ class User(Document):
 		self.remove_all_roles_for_guest()
 		self.validate_username()
 		self.remove_disabled_roles()
-		self.validate_user_limit()
 
 		if self.language == "Loading...":
 			self.language = None
+
+	def on_update(self):
+		# clear new password
+		self.validate_user_limit()
+		self.share_with_self()
+		clear_notifications(user=self.name)
+		frappe.clear_cache(user=self.name)
+		self.send_password_notification(self.__new_password)
 
 	def check_demo(self):
 		if frappe.session.user == 'demo@erpnext.com':
@@ -121,13 +128,6 @@ class User(Document):
 			self.user_type = 'System User'
 		else:
 			self.user_type = 'Website User'
-
-	def on_update(self):
-		# clear new password
-		self.share_with_self()
-		clear_notifications(user=self.name)
-		frappe.clear_cache(user=self.name)
-		self.send_password_notification(self.__new_password)
 
 	def share_with_self(self):
 		if self.user_type=="System User":
@@ -576,9 +576,11 @@ def user_query(doctype, txt, searchfield, start, page_len, filters):
 			key=searchfield, mcond=get_match_cond(doctype)),
 			tuple(list(STANDARD_USERS) + [txt, txt, txt, txt, start, page_len]))
 
-def get_total_users(exclude_users=None):
+def get_total_users():
 	"""Returns total no. of system users"""
-	return len(get_system_users(exclude_users=exclude_users))
+	return frappe.db.sql('''select sum(simultaneous_sessions) from `tabUser`
+		where enabled=1 and user_type="System User"
+		and name not in ({})'''.format(", ".join(["%s"]*len(STANDARD_USERS))), STANDARD_USERS)[0][0]
 
 def get_system_users(exclude_users=None):
 	if not exclude_users:

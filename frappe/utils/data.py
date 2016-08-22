@@ -114,6 +114,10 @@ def now_datetime():
 	dt = convert_utc_to_user_timezone(datetime.datetime.utcnow())
 	return dt.replace(tzinfo=None)
 
+def get_eta(from_time, percent_complete):
+	diff = time_diff(now_datetime(), from_time).total_seconds()
+	return str(datetime.timedelta(seconds=(100 - percent_complete) / percent_complete * diff))
+
 def _get_time_zone():
 	return frappe.db.get_system_setting('time_zone') or 'Asia/Kolkata'
 
@@ -569,7 +573,7 @@ def get_url(uri=None, full_address=False):
 
 	if not host_name:
 		if hasattr(frappe.local, "request") and frappe.local.request and frappe.local.request.host:
-			protocol = 'https' == frappe.get_request_header('X-Forwarded-Proto', "") and 'https://' or 'http://'
+			protocol = 'https://' if 'https' == frappe.get_request_header('X-Forwarded-Proto', "") else 'http://'
 			host_name = protocol + frappe.local.request.host
 
 		elif frappe.local.site:
@@ -588,11 +592,12 @@ def get_url(uri=None, full_address=False):
 		else:
 			host_name = frappe.db.get_value("Website Settings", "Website Settings",
 				"subdomain")
-			if host_name and "http" not in host_name:
-				host_name = "http://" + host_name
 
 			if not host_name:
 				host_name = "http://localhost"
+
+	if host_name and not (host_name.startswith("http://") or host_name.startswith("https://")):
+		host_name = "http://" + host_name
 
 	if not uri and full_address:
 		uri = frappe.get_request_header("REQUEST_URI", "")

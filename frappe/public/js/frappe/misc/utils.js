@@ -4,6 +4,15 @@
 frappe.provide('frappe.utils');
 
 frappe.utils = {
+	get_random: function(len) {
+	    var text = "";
+	    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+	    for( var i=0; i < len; i++ )
+	        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+	    return text;
+	},
 	get_file_link: function(filename) {
 		filename = cstr(filename);
 		if(frappe.utils.is_url(filename)) {
@@ -22,9 +31,6 @@ frappe.utils = {
 			return false;
 		}
 		return true;
-	},
-	is_mobile: function() {
-		return frappe.utils.is_xs();
 	},
 	is_xs: function() {
 		return $(document).width() < 768;

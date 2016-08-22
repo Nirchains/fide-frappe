@@ -36,8 +36,12 @@ frappe.views.ListFactory = frappe.views.Factory.extend({
 		if(frappe.route_history.length > 1) {
 			var prev_route = frappe.route_history[frappe.route_history.length-2];
 			if(prev_route[0]==="modules") {
-				// save the last page from the breadcrumb was accessed
-				frappe.breadcrumbs.set_doctype_module(frappe.get_route()[1], prev_route[1]);
+				var doctype = frappe.get_route()[1],
+					module = prev_route[1];
+				if(frappe.module_links[module] && in_list(frappe.module_links[module], doctype)) {
+					// save the last page from the breadcrumb was accessed
+					frappe.breadcrumbs.set_doctype_module(doctype, module);
+				}
 			}
 		}
 	},
@@ -323,53 +327,7 @@ frappe.views.DocListView = frappe.ui.Listing.extend({
 		var me = this;
 
 		if(frappe.route_options) {
-			this.filter_list.clear_filters();
-			$.each(frappe.route_options, function(key, value) {
-				var doctype = null;
-
-				// if `Child DocType.fieldname`
-				if (key.indexOf(".")!==-1) {
-					doctype = key.split(".")[0];
-					key = key.split(".")[1];
-				}
-
-				// find the table in which the key exists
-				// for example the filter could be {"item_code": "X"}
-				// where item_code is in the child table.
-
-				// we can search all tables for mapping the doctype
-				if(!doctype) {
-					if(in_list(frappe.model.std_fields_list, key)) {
-						// standard
-						doctype = me.doctype;
-					} else if(frappe.meta.has_field(me.doctype, key)) {
-						// found in parent
-						doctype = me.doctype;
-					} else {
-						frappe.meta.get_table_fields(me.doctype).every(function(d) {
-							if(frappe.meta.has_field(d.options, key)) {
-								doctype = d.options;
-								return false;
-							}
-							return true;
-						});
-
-						if(!doctype) {
-							frappe.msgprint(__('Warning: Unable to find {0} in any table related to {1}', [
-								key, __(me.doctype)]));
-						}
-					}
-				}
-
-				if(doctype) {
-					if($.isArray(value)) {
-						me.filter_list.add_filter(doctype, key, value[0], value[1]);
-					} else {
-						me.filter_list.add_filter(doctype, key, "=", value);
-					}
-				}
-			});
-			frappe.route_options = null;
+			this.set_filters_from_route_options();
 			this.dirty = true;
 		} else if(this.list_settings && this.list_settings.filters
 				&& this.list_settings.updated_on != this.list_settings_updated_on) {
