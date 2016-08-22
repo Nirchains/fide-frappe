@@ -10,9 +10,12 @@
     {% endif %}
 {% endblock %}
 
-{% block page_content %}
-<div class="webpage-content">
+{% block slideshow %}
 	{% include "templates/includes/slideshow.html" %}
+{% endblock %}
+
+{% block page_content %}
+<div class="webpage-content col-sm-{{positions_size["Content"]}}">
 	<article class="web-page-content" id="{{ name }}" {% if text_align -%}style="text-align: {{ text_align }}"{%- endif %}>
 	{{ main_section or "" }}
 	</article>

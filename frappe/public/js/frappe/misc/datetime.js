@@ -44,7 +44,7 @@ $.extend(frappe.datetime, {
 	},
 
 	obj_to_str: function(d) {
-		return moment(d).locale("en").format();
+		return moment(d).locale("es").format();
 	},
 
 	obj_to_user: function(d) {
@@ -120,7 +120,7 @@ $.extend(frappe.datetime, {
 
 		// user_fmt.replace("YYYY", "YY")? user might only input 2 digits of the year, which should also be parsed
 		return moment(val, [user_fmt.replace("YYYY", "YY"),
-			user_fmt]).locale("en").format(system_fmt);
+			user_fmt]).locale("es").format(system_fmt);
 	},
 
 	user_to_obj: function(d) {
@@ -137,7 +137,7 @@ $.extend(frappe.datetime, {
 	},
 
 	get_today: function() {
-		return moment().locale("en").format();
+		return moment().locale("es").format();
 	},
 
 	nowdate: function() {
@@ -146,7 +146,7 @@ $.extend(frappe.datetime, {
 
 	now_time: function() {
 		return frappe.datetime.convert_to_system_tz(moment(), false)
-			.locale("en").format("HH:mm:ss");
+			.locale("es").format("HH:mm:ss");
 	},
 
 	validate: function(d) {

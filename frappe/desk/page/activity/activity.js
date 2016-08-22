@@ -139,14 +139,14 @@ frappe.activity.Feed = Class.extend({
 		if((last && dateutil.obj_to_str(last) != dateutil.obj_to_str(date)) || (!last)) {
 			var diff = dateutil.get_day_diff(dateutil.get_today(), dateutil.obj_to_str(date));
 			if(diff < 1) {
-				pdate = 'Today';
+				pdate = __('Today');
 			} else if(diff < 2) {
-				pdate = 'Yesterday';
+				pdate = __('Yesterday');
 			} else {
 				pdate = dateutil.global_date_format(date);
 			}
 			data.date_sep = pdate;
-			data.date_class = pdate=='Today' ? "date-indicator blue" : "date-indicator";
+			data.date_class = pdate==__('Today') ? "date-indicator blue" : "date-indicator";
 		} else {
 			data.date_sep = null;
 			data.date_class = "";

@@ -13,16 +13,20 @@
 				<div class="{% if show_sidebar %}page-content with-sidebar col-sm-9{% else %} page-content col-sm-12 {% endif %}">
 					<div class="page-content-wrapper">
 						<div class="row page-head">
-							<div class="col-sm-8 col-xs-6">
-								{% if not no_breadcrumbs and parents %}
-								<div class="page-breadcrumbs">
-									{% block breadcrumbs %}
-									{% include 'templates/includes/breadcrumbs.html' %}
-									{% endblock %}
-								</div>
-								{% endif %}
+							{% block breadcrumbs %}
+							{% include 'templates/includes/breadcrumbs.html' %}
+							{% endblock %}
+							{% if show_search or self.header_actions() %}
+								{%-	set headerSize = "col-sm-8 col-xs-6" -%}
+							{% else %}
+								{% set headerSize = "col-sm-12" %}
+							{%	endif %}
+							<div class="{{headerSize}}">
+								<div class="page-header-block" data-html-block="header">
 								{% block header %}{% endblock %}
+								</div>
 							</div>
+							{% if show_search or self.header_actions() %}
 							<div class="col-sm-4 col-xs-6">
 								{% if show_search %}
 									<div class="page-search-block">
@@ -38,10 +42,29 @@
 								</div>
 								{% endif %}
 							</div>
+							{% endif %}
 						</div>
 					</div>
-					<div class="page_content">
-						{%- block page_content -%}{%- endblock -%}
+					<div class="page-content-wrapper">
+						<div class="row">
+		    	    		{%- set pos = "Top" -%}
+			    	    	{% include 'templates/includes/cms/modules_pos.html' %}
+			    	    </div>
+				
+						<div class="row">
+							{%- set pos = "Left" -%}
+						    {% include 'templates/includes/cms/modules_pos.html' %}
+				
+							{%- block page_content -%}{%- endblock -%}
+					
+							{%- set pos = "Right" -%}
+						    {% include 'templates/includes/cms/modules_pos.html' %}
+						</div>
+				
+						<div class="row">		    
+		    		    	{%- set pos = "Bottom" -%}
+			    	    	{% include 'templates/includes/cms/modules_pos.html' %}
+			    	    </div>
 					</div>
 				</div>
 			</div>

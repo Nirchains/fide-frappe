@@ -226,7 +226,10 @@ def format_datetime(datetime_string, format_string=None):
 def global_date_format(date):
 	"""returns date as 1 January 2012"""
 	formatted_date = getdate(date).strftime("%d %B %Y")
-	return formatted_date.startswith("0") and formatted_date[1:] or formatted_date
+	return format_month(formatted_date.startswith("0") and formatted_date[1:] or formatted_date)
+
+def format_month(texto):
+	return texto.replace("January", "Enero").replace("February", "Febrero").replace("March", "Marzo").replace("April", "Abril").replace("May", "Mayo").replace("June", "Junio").replace("July", "Julio").replace("August", "Agosto").replace("September", "Septiembre").replace("October", "Octubre").replace("November", "Noviembre").replace("December", "Diciembre")
 
 def has_common(l1, l2):
 	"""Returns truthy value if there are common elements in lists l1 and l2"""

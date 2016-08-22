@@ -2,7 +2,7 @@
 <!-- Built on Frappe. https://frappe.io/ -->
 <html lang="en">
 <head>
-	<meta charset="utf-8">
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>{% block title %} {{ title | striptags }} {% endblock %}</title>
 	<meta name="generator" content="frappe">
@@ -46,7 +46,9 @@
     </script>
 </head>
 <body data-path="{{ path }}">
-	<div class="main-section">
+	<div class="offcanvas-container">
+		<div class="offcanvas">
+			<div class="offcanvas-main-section">
 		<div>
 			{%- block banner -%}
 			{% include "templates/includes/banner_extension.html" ignore missing %}
@@ -76,6 +78,16 @@
 		</div>
 		<div>
 			{%- block footer -%}{% include "templates/includes/footer/footer.html" %}{%- endblock -%}
+				</div>
+			</div>
+			<div class="modal-backdrop offcanvas-main-section-overlay"></div>
+			<div class="sidebar sidebar-right visible-xs">
+				{% block offcanvas_sidebar -%}
+				<div class="sidebar-navbar-items">
+					{% include "templates/includes/navbar/navbar_items.html" %}
+				</div>
+				{%- endblock %}
+			</div>
 		</div>
 	</div>
 
@@ -102,5 +114,8 @@
 	<!-- csrf_token -->
 
     {%- block body_include %}{{ body_include or "" }}{% endblock -%}
+    <div id="back-top">
+		<a href="#top"><span>&nbsp;</span></a>
+	</div>
 </body>
 </html>

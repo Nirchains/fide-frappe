@@ -90,6 +90,9 @@ def get_website_settings():
 	if settings.address:
 		context["footer_address"] = settings.address
 
+	if settings.timetable:
+		context["timetable"] = settings.timetable
+
 	for k in ["facebook_share", "google_plus_one", "twitter_share", "linked_in_share",
 		"disable_signup"]:
 		context[k] = int(context.get(k) or 0)

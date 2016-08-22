@@ -366,7 +366,7 @@ function load_frappe_slides() {
 
 					delete frappe.wiz._from_load_messages;
 
-					moment.locale("en");
+					moment.locale("es");
 				}
 			});
 		},

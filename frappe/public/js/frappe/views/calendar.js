@@ -10,7 +10,8 @@ frappe.views.CalendarFactory = frappe.views.Factory.extend({
 
 		frappe.require([
 			'assets/frappe/js/lib/fullcalendar/fullcalendar.min.css',
-			'assets/frappe/js/lib/fullcalendar/fullcalendar.min.js'
+			'assets/frappe/js/lib/fullcalendar/fullcalendar.min.js',
+			'assets/frappe/js/lib/fullcalendar/lang/es.js'
 		], function() {
 			frappe.model.with_doctype(route[1], function() {
 				var options = {

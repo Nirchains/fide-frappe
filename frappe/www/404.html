@@ -3,12 +3,18 @@
 {%- block title -%}{{_("Not Found")}}{%- endblock -%}
 
 {%- block header -%}
-<h1 class="text-danger" style="margin-top: 100px;">{{_("Page missing or moved")}}</h1>
+<h1 class="text-danger" style="margin-bottom: 50px !important;margin-top: 50px !important;">{{_("Page missing or moved")}}</h1>
 {%- endblock -%}
 
 {% block page_content %}
-
-<div class="404-content" style="margin-bottom: 100px;">
+<!-- no-sidebar -->
+<div class="404-content col-sm-12">
 	<p>{{_("We are very sorry for this, but the page you are looking for is missing (this could be because of a typo in the address) or moved.")}}</p>
 </div>
+<div class="col-xs-12">
+	<div class="show-more-news readmore" style="width:100%;"><a class="btn" href="/">Ir a la página de inicio</a></div>
+</div>
+<p></p>
+<p></p>
+<p></p>
 {% endblock %}

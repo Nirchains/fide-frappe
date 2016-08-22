@@ -673,7 +673,7 @@ apps/frappe/frappe/public/js/frappe/ui/modal.html +17,Confirm,Confirmar
 apps/frappe/frappe/desk/page/applications/applications.js +160,Install {0}?,Instale {0}?
 apps/frappe/frappe/www/login.html +25,Forgot Password?,¿Se te olvidó tu contraseña?
 DocType: System Settings,yyyy-mm-dd,aaaa-mm-dd
-apps/frappe/frappe/public/js/frappe/model/model.js +17,ID,CARNÉ DE IDENTIDAD
+apps/frappe/frappe/public/js/frappe/model/model.js +17,ID,ID
 apps/frappe/frappe/email/doctype/email_account/email_account.py +46,Login Id is required,Se requiere un ID para iniciar sesión
 DocType: Website Slideshow,Website Slideshow,Presentación de la Página Web
 apps/frappe/frappe/public/js/frappe/form/templates/grid_body.html +6,No Data,No hay datos
@@ -898,7 +898,7 @@ DocType: Website Settings,Top Bar,Barra Superior
 apps/frappe/frappe/core/page/modules_setup/modules_setup.html +24,Global Settings: Users will only be able to choose checked icons,Configuración global: Los usuarios sólo podrán elegir los iconos controladas
 apps/frappe/frappe/core/doctype/file/test_file.py +57,Home/Test Folder 2,Inicio / Test Carpeta 2
 DocType: System Settings,Ignore User Permissions If Missing,"Ignorar los permisos de usuario, en caso que no existan."
-apps/frappe/frappe/public/js/frappe/form/control.js +858,Please save the document before uploading.,"Por favor, guarde el documento antes de subirlo."
+apps/frappe/frappe/public/js/frappe/form/control.js +858,Please save the document before uploading.,"Por favor, guarde el documento antes realizar la subida."
 apps/frappe/frappe/public/js/frappe/ui/messages.js +198,Enter your password,Ingrese su contraseña
 DocType: Dropbox Backup,Dropbox Access Secret,Acceso Secreto a Dropbox
 apps/frappe/frappe/templates/includes/comments/comments.html +115,Add Another Comment,Añadir otro comentario

@@ -309,16 +309,43 @@ $.extend(frappe, {
 	set_search_path: function(path) {
 		frappe.search_path[location.pathname] = path;
 	},
-	make_navbar_active: function() {
+	//PFG
+	make_navbar_active_selector: function(selector) {
 		var pathname = window.location.pathname;
-		$(".navbar-nav a.active").removeClass("active");
-		$(".navbar-nav a").each(function() {
+		$(selector + ".active").removeClass("active");
+		$(selector).each(function() {
 			var href = $(this).attr("href");
 			if(href===pathname) {
 				$(this).addClass("active");
 				return false;
+			} else {
+				if (frappe.check_active(pathname, href)) {
+					$(this).addClass("active-sec");
+					return false;
+				}
 			}
 		})
+	},
+	//PFG
+	make_navbar_active: function() {
+		frappe.make_navbar_active_selector(".top-nav-bar a");
+		frappe.make_navbar_active_selector(".sidebar-nav .navbar-nav a");
+		frappe.make_navbar_active_selector(".web-footer-menu a");
+	},
+	//PFG
+	check_active: function (current, href) {
+		if (current !== null && current !== undefined && href !== null && href !== undefined) {
+			var a_current = current.split("/");
+			var a_href = href.split("/");
+			for (i = 1; i < a_href.length; i++) {
+				if (i < a_href.length) {
+					if (a_current[i] !== a_href[i]) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
 	},
 	get_navbar_search: function() {
 		return $(".navbar .search, .sidebar .search");

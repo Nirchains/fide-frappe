@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 import frappe, re, os
+import unicodedata
 
 def delete_page_cache(path):
 	cache = frappe.cache()
@@ -92,8 +93,12 @@ def cleanup_page_name(title):
 	# replace repeating hyphens
 	name = re.sub(r"(-)\1+", r"\1", name)
 
+	name = elimina_tildes(name)
+
 	return name[:140]
 
+def elimina_tildes(s):
+   return ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'))
 
 def get_shade(color, percent):
 	color, color_format = detect_color_format(color)

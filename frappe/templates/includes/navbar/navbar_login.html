@@ -23,6 +23,11 @@
 	</ul>
 </li>
 {% if not hide_login %}
-<li class="btn-login-area"><a href="/login">{{ _("Login") }}</a></li>
+<li class="btn-login-area">
+	<a href="/login"><span class="icon-signin"></span>{{ _("Login") }}</a>
+</li>
+<li class="btn-login-area">
+	<a href="/login#signup"><span class="icon-indent-right"></span>{{ _("Registro") }}</a>
+</li>
 {% endif %}
 {% endif %}

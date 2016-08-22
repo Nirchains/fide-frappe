@@ -11,13 +11,15 @@ from frappe.website.doctype.website_slideshow.website_slideshow import get_slide
 from frappe.website.utils import find_first_image, get_comment_list
 from frappe.utils.jinja import render_template
 from jinja2.exceptions import TemplateSyntaxError
+from frappe.website.utils import get_home_page
+from fidetia.cms.utils import load_module_positions, update_positions_size
 
 class WebPage(WebsiteGenerator):
 	save_versions = True
 	website = frappe._dict(
 		template = "templates/generators/web_page.html",
 		condition_field = "published",
-		page_title_field = "title",
+		page_title_field = "title"
 	)
 
 	def get_feed(self):
@@ -39,6 +41,25 @@ class WebPage(WebsiteGenerator):
 			"text_align": self.text_align,
 		})
 
+		context.parents = []
+
+		routeSplit = context.route.split("/")
+		count = 0
+		while count < len(routeSplit):
+			item = frappe.db.get_value("Web Page", routeSplit[count], ["title", "route"], as_dict=1)
+			if count != len(routeSplit) - 1:
+				if item:
+					nuevapagina = frappe._dict(
+						name = item.route,
+						title = item.title
+					)
+					context.parents.append(nuevapagina)
+			else:
+				#Activamos la ruta si estamos en una pagina distinta a la de inicio
+				if item.route != get_home_page():
+					context.show_breadcrumbs = True
+			count = count + 1
+
 		if self.description:
 			context.setdefault("metatags", {})["description"] = self.description
 
@@ -48,6 +69,17 @@ class WebPage(WebsiteGenerator):
 		self.set_metatags(context)
 		self.set_breadcrumbs(context)
 		self.set_title_and_header(context)
+
+		context.module_positions = load_module_positions(context.web_page_modules)
+		try:
+			context.left_size = int(context.left_size)
+		except:
+			context.left_size = 0
+		try:
+			context.right_size = int(context.right_size)
+		except:
+			context.right_size = 0
+		context.positions_size = update_positions_size(context.module_positions, context.left_size, context.right_size)
 
 		return context
 
