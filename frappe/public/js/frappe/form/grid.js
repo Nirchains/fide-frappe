@@ -741,7 +741,7 @@ frappe.ui.form.GridRow = Class.extend({
 			});
 
 		$col.field_area = $('<div class="field-area"></div>').appendTo($col).toggle(false);
-		$col.static_area = $('<div class="static-area text-ellipsis" data-toggle="tooltip" data-placement="top" title="' + txt + '"></div>').appendTo($col).html(txt);
+		$col.static_area = $('<div class="static-area text-ellipsis"></div>').appendTo($col).html(txt);
 		$col.df = df;
 		$col.column_index = ci;
 
