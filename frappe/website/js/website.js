@@ -296,6 +296,7 @@ $.extend(frappe, {
 			if(e.which===13 && val) {
 				$(this).val("").blur();
 				frappe.do_search(val);
+				$(".offcanvas").removeClass("active-left active-right");
 				return false;
 			}
 		});
@@ -401,11 +402,26 @@ $(document).ready(function() {
 
 	frappe.bind_navbar_search();
 
+	$(".toggle-sidebar").on("click", function() {
+		$(".offcanvas").addClass("active-right");
+		return false;
+	});
+
+	// collapse offcanvas sidebars!
+	$(".offcanvas .sidebar").on("click", "a", function() {
+		$(".offcanvas").removeClass("active-left active-right");
+	});
+
+	$(".offcanvas-main-section-overlay").on("click", function() {
+		$(".offcanvas").removeClass("active-left active-right");
+		return false;
+	});
+
 	// switch to app link
 	if(getCookie("system_user")==="yes" && logged_in) {
-		$("#website-post-login .dropdown-menu").append('<li><a href="/desk">Switch To Desk</a></li>');
+		$("#website-post-login .dropdown-menu").append('<li><a href="/desk">Intranet</a></li>');
 		$(".navbar-header .dropdown:not(.dropdown-submenu) > .dropdown-menu")
-			.append('<li><a href="/desk">Switch To Desk</a></li>');
+			.append('<li><a href="/desk">Intranet</a></li>');
 	}
 
 	frappe.render_user();
