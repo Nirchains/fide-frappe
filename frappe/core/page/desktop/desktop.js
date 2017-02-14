@@ -7,6 +7,8 @@ frappe.pages['desktop'].on_page_load = function(wrapper) {
 		frappe.desktop.set_background();
 	}
 	frappe.desktop.refresh(wrapper);
+
+	setPageDefault();
 };
 
 frappe.pages['desktop'].on_page_show = function(wrapper) {

@@ -7,13 +7,3 @@
 	{%- endfor %}
 </ul>
 {%- endif %}
-<ul class="nav navbar-nav navbar-right">
-	{%- for page in top_bar_items -%}
-		{% if not page.parent_label and page.right -%}
-			{% include "templates/includes/navbar/navbar_link.html" %}
-		{%- endif -%}
-	{%- endfor %}
-	{% if not only_static %}
-		{% block navbar_right_extension %}{% endblock %}
-	{% endif %}
-</ul>

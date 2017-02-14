@@ -10,6 +10,7 @@ import frappe.desk.form.meta
 from frappe.model.utils.list_settings import get_list_settings
 from frappe.permissions import get_doc_permissions
 from frappe import _
+from fidetia.utils.utils import check_desktop_permission
 
 @frappe.whitelist()
 def getdoc(doctype, name, user=None):
@@ -24,6 +25,9 @@ def getdoc(doctype, name, user=None):
 
 	if not name:
 		name = doctype
+
+	#PFG: Comprueba si un usuario web tiene permisos
+	check_desktop_permission(doctype)
 
 	if not frappe.db.exists(doctype, name):
 		return []

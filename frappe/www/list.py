@@ -6,6 +6,7 @@ import frappe
 from frappe.utils import cint, quoted
 from frappe.website.render import resolve_path
 from frappe import _
+from fidetia.utils.utils import check_desktop_permission
 
 no_cache = 1
 no_sitemap = 1
@@ -22,6 +23,8 @@ def get_context(context):
 
 @frappe.whitelist(allow_guest=True)
 def get(doctype, txt=None, limit_start=0, limit=20, **kwargs):
+	#PFG: Comprueba si un usuario web tiene permisos
+	check_desktop_permission(doctype)
 	"""Returns processed HTML page for a standard listing."""
 	limit_start = cint(limit_start)
 	limit_page_length = limit
